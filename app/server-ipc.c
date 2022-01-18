@@ -11,9 +11,16 @@
 
 #include "messages.h"
 
+
+int key = 2137;
+buf_message mb;
+buf_message mb_back;
+
+
 struct User {
 	char login[NAME_SIZE];
 	int groups[DEF_SIZE];
+	int online;
 };
 
 static int id;
@@ -27,10 +34,6 @@ void closeServer() {
 int main(int argc, char* argv[]) {
 	struct User users[DEF_SIZE];
 	int users_count = 0;
-
-	int key = 2137;
-	buf_message mb;
-	buf mb_back;
 	
 	id = msgget(key, IPC_CREAT | 0666);
 	signal(SIGINT, closeServer);
@@ -38,29 +41,49 @@ int main(int argc, char* argv[]) {
 	while (1) {
 		msgrcv(id, &mb, MSG_SIZE, 0, 0);
 
-		if (mb.mtype < 100) {
-			switch(mb.mtype) {
-				case 1: ;	// semi-colon to fix a compiler bug
-					int found = 0;
+		if (mb.type < 100) {
+			int found = 0;
+			switch(mb.type) {
+
+				case 99:		// user logout
+					for (int i=0; i<=DEF_SIZE; i++)
+						if (!strcmp(users[i].login, mb.text))
+							users[i].online = 0;
+					break;
+				case 98:	;	// user login
 					for (int i=0; i<=DEF_SIZE; i++) {
-						if (!strcmp(users[i].login, mb.mtext)) {
+						if (!strcmp(users[i].login, mb.text)) {
 							found = 1;
-							int user_id = i;
+							mb_back.text[0] = i;
+							users[i].online = 1;
 						}
 					}
 
 					if (found) {
-						mb_back.mtype = 101;
-						printf("Server: old user logging in - %s\n", mb.mtext);
+						mb_back.type = 199;
+						printf("Server: old user logging in - %s - %d\n", mb.text, mb_back.text[0]);
 					}
 					else {
-						mb_back.mtype = 102;
-						strcpy(users[users_count++].login, mb.mtext);
-						printf("Server: new user logging in - %s\n", mb.mtext);
+						mb_back.text[0] = users_count;
+						mb_back.type = 198;
+						strcpy(users[users_count].login, mb.text);
+						users[users_count].online = 1;
+						users_count++;
+						printf("Server: new user logging in - %s - %d\n", mb.text, mb_back.text[0]);
 					}
 
 					msgsnd(id, &mb_back, MSG_SIZE, 0);
 					break;
+				case 1:
+					mb_back.type = 101;
+					mb_back.text[0] = users_count;
+					msgsnd(id, &mb_back, MSG_SIZE, IPC_NOWAIT);
+					for (int i=0; i<users_count; i++) {
+						strcpy(mb_back.text, users[i].login);
+						printf("%s\n", users[i].login);
+						msgsnd(id, &mb_back, MSG_SIZE, IPC_NOWAIT);
+						printf("2\n");
+					}
 			}
 		}
 	}

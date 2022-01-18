@@ -9,27 +9,39 @@
 
 #include "messages.h"
 
+
 int key = 2137;
 buf_message mb;
 buf_message mb_back;
 
+
 char username[NAME_SIZE];
+int user_id;
 int logged_in = 0;
 
 
 int logIn(int* id) {
 	printf("\nPlease, provide a username: ");
 
-    scanf("%s", mb.mtext);
-	mb.mtype = 1;
-	strcpy(username, mb.mtext);
+    scanf("%s", mb.text);
+	mb.type = 98;
+	strcpy(username, mb.text);
 
-	msgsnd(*id, &mb, strlen(mb.mtext) + 1, IPC_NOWAIT);
+	msgsnd(*id, &mb, strlen(username) + 1, IPC_NOWAIT);
 
 	return 1;
 }
 
-int menu() {
+int logOut(int* id) {
+	mb.type = 99;
+	strcpy(username, mb.text);
+
+	msgsnd(*id, &mb, strlen(username) + 1, IPC_NOWAIT);
+
+	return 0;
+}
+
+int menu(int* id) {
 	char choice[MSG_SIZE];
 
 	printf("Available commands:\n");
@@ -45,15 +57,28 @@ int menu() {
 
 	scanf("%s", choice);
 
-	if (!strcmp(choice, "users"))
-		return 0;
-	else if (!strcmp(choice, "logout") || !strcmp(choice, "exit") || !strcmp(choice, "x")) {
-		logged_in = 0;
-		return 1;
+	
+	if (!strcmp(choice, "logout") || !strcmp(choice, "exit") || !strcmp(choice, "x"))
+		logged_in = logOut(id);
+	else if (!strcmp(choice, "users")) {
+		mb.type = 1;
+		msgsnd(*id, &mb, 0, IPC_NOWAIT);
 	}
+	else if (!strcmp(choice, "groups"))
+		return 2;
+	else if (!strcmp(choice, "join"))
+		return 3;
+	else if (!strcmp(choice, "leave"))
+		return 4;
+	else if (!strcmp(choice, "msg"))
+		return 5;
+	else if (!strcmp(choice, "msggroup"))
+		return 6;
+	else if (!strcmp(choice, "msgview"))
+		return 7;
 	else {
 		printf("\n### Wrong command, try again! ###\n");
-		menu();
+		menu(id);
 	}
 }
 
@@ -61,21 +86,35 @@ int main(int argc, char* argv[])  {
 	int id = msgget(key, IPC_CREAT | 0666);
 
 	while (1) {
-		if (!logged_in) {
+		if (!logged_in)
 			logged_in = logIn(&id);
-		}
 		else {
-			if (menu()) continue;
+			menu(&id);
+
+			if (!logged_in)	// if user decided to logout, go back to logging phase
+				continue;
 		}
 
 		msgrcv(id, &mb_back, MSG_SIZE, 0, 0);
 
-		if (mb_back.mtype >= 100) {
-			if (mb_back.mtype == 101) {
+		if (mb_back.type >= 100) {
+			if (mb_back.type == 199) {
+				user_id = mb_back.text[0];
 				printf("\n~~~ Welcome back, %s! ~~~\n", username);
 			}
-			else if (mb_back.mtype == 102) {
+			else if (mb_back.type == 198) {
+				user_id = mb_back.text[0];
 				printf("\n~~~ Hello, %s! ~~~\n", username);
+			}
+			else if (mb_back.type == 101) {
+				int users_count = mb_back.text[0];
+				for (int _=0; _<users_count; _++) {
+					printf("1\n");
+					msgrcv(id, &mb_back, MSG_SIZE, 0, 0);
+					printf("2\n");
+					printf("%s\n", mb_back.text);
+				}
+
 			}
 		}		
 	}
