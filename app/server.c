@@ -197,7 +197,7 @@ void add_user_to_group() {
 
 			// finally if correct group is chosen:
 			for (int k=0; k<=DEF_SIZE; k++) {
-				if (!strcmp(users[i].login, user_name)) {
+				if (!strcmp(users[k].login, user_name)) {
 					groups[i].user_ids[groups[i].user_count] = k;
 					groups[i].user_count++;
 					users[k].group_ids[users[k].group_count] = i;
