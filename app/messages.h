@@ -6,18 +6,31 @@
 #define NAME_SIZE 128
 #define MSG_SIZE 256
 
-typedef struct buf_message {
+#define KEY 2137
+
+typedef struct msg_test {
+	long type;
+} msg_test;
+
+typedef struct msg_txt {
 	long type;
 	char text[MSG_SIZE];
-} buf_message;
+} msg_txt;
 
-typedef struct buf_int {
+// set third argument as 4 (C int size)
+typedef struct msg_int {
 	long type;
 	int value;
-} buf_int;
+} msg_int;
 
-typedef struct buf {
-	long type;
-} buf;
+// typedef struct buf_int {
+// 	long type;
+// 	int value;
+// } buf_int;
+
+// typedef struct buf {
+// 	long type;
+// } buf;
+
 
 #endif
