@@ -4,13 +4,13 @@ COMMON_DEPENDENCIES =
 SERVER_DEPENDENCIES =
 CLIENT_DEPENDENCIES =
 
-all: client.exe server.exe
+all: client.out server.out
 
-client.exe: $(COMMON_DEPENDENCIES) $(CLIENT_DEPENDENCIES)
-	gcc app/client.c -o client.out $(COMMON_DEPENDENCIES) $(CLIENT_DEPENDENCIES)
+client.out: $(COMMON_DEPENDENCIES) $(CLIENT_DEPENDENCIES)
+	gcc app/inf150192c.c -o client.out $(COMMON_DEPENDENCIES) $(CLIENT_DEPENDENCIES)
 
-server.exe : $(COMMON_DEPENDENCIES) $(SERVER_DEPENDENCIES)
-	gcc app/server.c -o server.out $(COMMON_DEPENDENCIES) $(SERVER_DEPENDENCIES)
+server.out : $(COMMON_DEPENDENCIES) $(SERVER_DEPENDENCIES)
+	gcc app/inf150192s.c -o server.out $(COMMON_DEPENDENCIES) $(SERVER_DEPENDENCIES)
 
 $(COMMON_DEPENDENCIES):
 	gcc -c $@.c -o $@ $(FLAGS)

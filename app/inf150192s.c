@@ -9,7 +9,7 @@
 #include <sys/ipc.h>
 #include <sys/types.h>
 
-#include "messages.h"
+#include "inf150192s_messages.h"
 
 
 int id;
@@ -386,7 +386,6 @@ void msg_user_group() {
 }
 
 void list_msgs() {
-	printf("AAAAAAA");
 	msg_txt mb;
 	msg_int mb_back;
 	mb_back.type = 9;
@@ -397,8 +396,6 @@ void list_msgs() {
 	for (int i=0; i<users_count; i++)
 		if (!strcmp(mb.text, users[i].login))
 			user_id = i;
-
-	// printf("%s\n", users[user_id].login);
 
 	// send back how many msgs the user has in inbox (from users)
 	mb_back.value = users[user_id].msg_count;
