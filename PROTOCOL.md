@@ -19,4 +19,4 @@
 ### Struktury danych:
 
 * _User_ - tworzy obiekt nowego użytkownika (przechowywany w tablicy _users_) i zawiera informacje o jego nazwie, grupach, wiadomościach oraz statusie
-* _Group_ - tworzy obiekt nowej grupy (przechowywany w tablict _groups_) i zawiera informacje o jej nazwie, użytkownikach oraz wiadomościach
+* _Group_ - tworzy obiekt nowej grupy (przechowywany w tablicy _groups_) i zawiera informacje o jej nazwie, użytkownikach oraz wiadomościach
