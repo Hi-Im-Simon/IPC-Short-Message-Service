@@ -1,0 +1,1 @@
+tar -zcvf compressed/Szymon.Stanislawski.150192.tar.gz compressed/project
