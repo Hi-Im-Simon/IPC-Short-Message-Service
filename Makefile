@@ -1,25 +1,26 @@
 FLAGS = -Wall
 
-COMMON_DEPENDENCIES = 
-SERVER_DEPENDENCIES =
-CLIENT_DEPENDENCIES =
+# dependencies
+COMMON_DEP = 
+SERVER_DEP =
+CLIENT_DEP =
 
 all: client.out server.out
 
-client.out: $(COMMON_DEPENDENCIES) $(CLIENT_DEPENDENCIES)
-	gcc app/inf150192c.c -o client.out $(COMMON_DEPENDENCIES) $(CLIENT_DEPENDENCIES)
+client.out: $(COMMON_DEP) $(CLIENT_DEP)
+	gcc app/inf150192c.c -o client.out $(COMMON_DEP) $(CLIENT_DEP)
 
-server.out : $(COMMON_DEPENDENCIES) $(SERVER_DEPENDENCIES)
-	gcc app/inf150192s.c -o server.out $(COMMON_DEPENDENCIES) $(SERVER_DEPENDENCIES)
+server.out : $(COMMON_DEP) $(SERVER_DEP)
+	gcc app/inf150192s.c -o server.out $(COMMON_DEP) $(SERVER_DEP)
 
-$(COMMON_DEPENDENCIES):
+$(COMMON_DEP):
 	gcc -c $@.c -o $@ $(FLAGS)
 
-$(SERVER_DEPENDENCIES):
+$(SERVER_DEP):
 	gcc -c $@.c -o $@ $(FLAGS)
 
-$(CLIENT_DEPENDENCIES):
+$(CLIENT_DEP):
 	gcc -c $@.c -o $@ $(FLAGS)
 
 clean:
-	rm -f $(COMMON_DEPENDENCIES) $(SERVER_DEPENDENCIES) $(CLIENT_DEPENDENCIES)
+	rm -f $(COMMON_DEP) $(SERVER_DEP) $(CLIENT_DEP)
