@@ -165,6 +165,125 @@ void add_to_group() {
 		printf("This group doesn't exist!\n");
 }
 
+void remove_from_group() {
+	msg_txt mb;
+	mb.type = 6;
+	msg_int mb_back;
+
+	printf("Which group would you like to leave?: ");
+	scanf("%s", mb.text);
+
+	send_msg_type(6);
+	msgsnd(id, &mb, MSG_SIZE, IPC_NOWAIT);
+	msgrcv(id, &mb_back, 0, 0, 0);
+	strcpy(mb.text, username);
+	msgsnd(id, &mb, MSG_SIZE, IPC_NOWAIT);
+	msgrcv(id, &mb_back, 4, 0, 0);
+
+	if (mb_back.value == 1) 
+		printf("Successfully left a group!\n");
+	else if (mb_back.value == 2)
+		printf("You are not a member of this group!\n");
+	else
+		printf("This group doesn't exist!\n");
+}
+
+void send_msg_to_user() {
+	msg_txt mb;
+	mb.type = 7;
+	msg_int mb_back;
+	char message[MSG_SIZE];
+
+	printf("Which user would you like to send a message to?: ");
+	scanf("%s", mb.text);
+
+	if (!strcmp(mb.text, username)) {
+		printf("You can't send a message to yourself!\n");
+		return;
+	}
+
+	printf("Your message:\n> ");
+	scanf(" %[^\n]", message);
+
+	send_msg_type(7);
+	msgsnd(id, &mb, MSG_SIZE, IPC_NOWAIT);
+	msgrcv(id, &mb_back, 0, 0, 0);
+	strcpy(mb.text, username);
+	msgsnd(id, &mb, MSG_SIZE, IPC_NOWAIT);
+	msgrcv(id, &mb_back, 0, 0, 0);
+	strcpy(mb.text, message);
+	msgsnd(id, &mb, MSG_SIZE, IPC_NOWAIT);
+	msgrcv(id, &mb_back, 4, 0, 0);
+
+	if (mb_back.value)
+		printf("Successfully sent a message!\n");
+	else
+		printf("This user doesn't exist!\n");
+}
+
+void send_msg_to_group() {
+	msg_txt mb;
+	mb.type = 8;
+	msg_int mb_back;
+	char message[MSG_SIZE];
+
+	printf("Which group would you like to send a message to?: ");
+	scanf("%s", mb.text);
+
+	printf("Your message:\n> ");
+	scanf(" %[^\n]", message);
+
+	send_msg_type(8);
+	msgsnd(id, &mb, MSG_SIZE, IPC_NOWAIT);
+	msgrcv(id, &mb_back, 0, 0, 0);
+	strcpy(mb.text, username);
+	msgsnd(id, &mb, MSG_SIZE, IPC_NOWAIT);
+	msgrcv(id, &mb_back, 0, 0, 0);
+	strcpy(mb.text, message);
+	msgsnd(id, &mb, MSG_SIZE, IPC_NOWAIT);
+	msgrcv(id, &mb_back, 4, 0, 0);
+
+	if (mb_back.value == 1)
+		printf("Successfully sent a message!\n");
+	else if (mb_back.value == 2)
+		printf("You are not a member of this group!\n");
+	else
+		printf("This group doesn't exist!\n");
+}
+
+void view_msgs() {
+	msg_txt mb;
+	mb.type = 9;
+	msg_int mb_back;
+
+	strcpy(mb.text, username);
+
+	send_msg_type(9);
+	msgsnd(id, &mb, NAME_SIZE, IPC_NOWAIT);
+	msgrcv(id, &mb_back, 4, 0, 0);
+	int user_msgs_count = mb_back.value;
+	msgsnd(id, &mb, NAME_SIZE, IPC_NOWAIT);
+	msgrcv(id, &mb_back, 4, 0, 0);
+	int group_msgs_count = mb_back.value;
+
+	printf("You have %d message(s):\n", (user_msgs_count + group_msgs_count));
+
+	msg_txt mb_back2;
+
+	for (int i=0; i<user_msgs_count; i++) {
+		msgsnd(id, &mb, 0, IPC_NOWAIT);
+		msgrcv(id, &mb_back2, MSG_SIZE, 0, 0);
+
+		printf("> %s\n", mb_back2.text);
+	}
+
+	for (int j=0; j<group_msgs_count; j++) {
+		msgsnd(id, &mb, 0, IPC_NOWAIT);
+		msgrcv(id, &mb_back2, MSG_SIZE, 0, 0);
+
+		printf("> [%s\n", mb_back2.text);
+	}
+}
 
 int main(int argc, char* argv[]) {
 	id = msgget(KEY, IPC_CREAT | 0666);
@@ -206,14 +325,22 @@ int main(int argc, char* argv[]) {
 				add_to_group();
 				show_menu = 0;
 			}
-			else if (!strcmp(user_choice, "leave"))
-				return 4;
-			else if (!strcmp(user_choice, "msg"))
-				return 5;
-			else if (!strcmp(user_choice, "msggroup"))
-				return 6;
-			else if (!strcmp(user_choice, "msgview"))
-				return 7;
+			else if (!strcmp(user_choice, "leave")) {
+				remove_from_group();
+				show_menu = 0;
+			}
+			else if (!strcmp(user_choice, "msg")) {
+				send_msg_to_user();
+				show_menu = 0;
+			}
+			else if (!strcmp(user_choice, "msggroup")) {
+				send_msg_to_group();
+				show_menu = 0;
+			}
+			else if (!strcmp(user_choice, "msgview")){
+				view_msgs();
+				show_menu = 0;
+			}
 			else {
 				printf("\n### Wrong command, try again! ###\n");
 			}

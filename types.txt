@@ -1,4 +1,0 @@
-from user:
-    1 - user logging in
-    2 - user logging out
-    3 - list all online users
