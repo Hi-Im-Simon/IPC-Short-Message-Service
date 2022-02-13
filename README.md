@@ -1,2 +1,9 @@
 # IPC-Short-Message-Service
-A simple short message service in C
+
+
+## Instrukcja kompilacji
+
+* `cd project_directory` gdzie _project\_directory_ to główny folder projektu
+* `make`
+
+
