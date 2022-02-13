@@ -4,7 +4,7 @@
 ## Instrukcja kompilacji
 
 * `cd project_directory` (gdzie _project\_directory_ to główny folder projektu)
-* `make`
+* `make` (flaga _-Wall_ jest automatycznie dodana do kompilacji)
 
 
 ## Instrukcja uruchomienia
