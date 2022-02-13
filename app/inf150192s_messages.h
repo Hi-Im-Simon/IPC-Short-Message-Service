@@ -23,14 +23,5 @@ typedef struct msg_int {
 	int value;
 } msg_int;
 
-// typedef struct buf_int {
-// 	long type;
-// 	int value;
-// } buf_int;
-
-// typedef struct buf {
-// 	long type;
-// } buf;
-
 
 #endif
